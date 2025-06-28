@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+  # app:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.dev
+  #   ports:
+  #   - "5001:5001"
+  #   - "9229:9229"
+  #   volumes:
+  #   - ./:/app
+  #   - /app/node_modules
+  #   - ./Uploads:/app/uploads
+  #   command: npx tsx watch --clear-screen=false --ignore ./node_modules --ignore ./Uploads --ignore ./dist --inspect=0.0.0.0:9229 src/index.ts
+  #   depends_on:
+  #   - postgres
