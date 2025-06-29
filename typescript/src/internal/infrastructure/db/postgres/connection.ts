@@ -1,6 +1,7 @@
 import { DataSource } from "typeorm";
 import { env } from "../../config/env";
-
+import WithdrawalModel from "./models/withdrawals.models";
+import TimeDepositModel from "./models/timeDeposits.model";
 export const AppDataSource = new DataSource({
     type: 'postgres',
     host: env.POSTGRES_HOST,
@@ -8,7 +9,7 @@ export const AppDataSource = new DataSource({
     username: env.POSTGRES_USER,
     password: env.POSTGRES_PASSWORD,
     database: env.POSTGRES_DB,
-    entities: [],
+    entities: [TimeDepositModel, WithdrawalModel],
     synchronize: false, 
     logging: env.NODE_ENV === 'dev',
     migrations: env.NODE_ENV === 'dev' ? ['src/internal/infrastructure/db/postgres/migration/*.ts']: ['dist/internal/infrastructure/db/postgres/migration/*.cjs'],
