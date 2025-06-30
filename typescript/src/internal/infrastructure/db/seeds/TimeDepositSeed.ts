@@ -1,6 +1,8 @@
 import { DataSource } from 'typeorm';
 import TimeDepositModel from '../postgres/models/TimeDeposits.model';
 import { timeDepositData } from './data/timeDepositData';
+import WithdrawalModel from '../postgres/models/Withdrawals.models';
+import withdrawalData from './data/withDrawalData';
 
 export async function seedTimeDeposits(dataSource: DataSource): Promise<void> {
  
@@ -32,9 +34,39 @@ export async function seedTimeDeposits(dataSource: DataSource): Promise<void> {
   }
 }
 
+export async function seedWithdrawals(dataSource: DataSource): Promise<void> {
+  try {
+    await dataSource.transaction(async (transactionalEntityManager) => {
+      const existingWithdrawals = await transactionalEntityManager
+        .createQueryBuilder(WithdrawalModel, 'withdrawal')
+        .where('withdrawal.id IN (:...ids)', { ids: withdrawalData.map((d) => d.id) })
+        .getMany();
+
+      const existingIds = new Set(existingWithdrawals.map((d) => d.id));
+      const newWithdrawals = withdrawalData.filter((d) => !existingIds.has(d.id));
+
+      const withdrawalEntities = newWithdrawals.map((data) => {
+        const entity = new WithdrawalModel();
+        entity.id = data.id;
+        entity.amount = data.amount;
+        entity.timeDepositId = data.timeDepositId;
+        entity.date = data.date;
+        return entity;
+      });
+
+      await transactionalEntityManager.save(WithdrawalModel, withdrawalEntities);
+      console.log(`Successfully seeded ${newWithdrawals.length} withdrawals.`);
+    });
+  } catch (error) {
+    console.error('Error seeding withdrawals:', error);
+    throw new Error(`Failed to seed withdrawals: ${error}`);
+  }
+}
+
 export async function runSeed(dataSource: DataSource): Promise<void> {
   try {
     await seedTimeDeposits(dataSource);
+    await seedWithdrawals(dataSource);
     console.log('Seeding completed successfully.');
   } catch (error) {
     console.error('Seeding failed:', error);
