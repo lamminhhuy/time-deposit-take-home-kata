@@ -13,8 +13,10 @@ export class TimeDepositRepository extends Repository<TimeDepositModel> implemen
 
   async getAllTimeDeposit(): Promise<TimeDeposit[]> {
     try {
-      const models = await this.find();
-      return models;
+      const models = await this.find({
+        relations: ['withdrawals'],
+      });
+      return models.map(model => this.toDomainEntity(model));
     } catch (error) {
       throw new Error(`Failed to fetch all time deposits: ${error}`);
     }
@@ -42,15 +44,16 @@ export class TimeDepositRepository extends Repository<TimeDepositModel> implemen
   
 
   private toDomainEntity(model: TimeDepositModel): TimeDeposit {
-    return new TimeDeposit(model.id, model.planType, model.balance, model.days);
+    return new TimeDeposit(model.id, model.planType, model.balance, model.days, model.withdrawals);
   }
 
-  private toDatabaseModel(entity: TimeDeposit): TimeDepositModel {
+  private toDatabaseModel(entity: TimeDepositModel): TimeDepositModel {
     const model = new TimeDepositModel();
     model.id = entity.id;
     model.planType = entity.planType;
     model.balance = entity.balance;
     model.days = entity.days;
+    model.withdrawals = entity.withdrawals;
     return model;
   }
 }
