@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from "typeorm";
+import WithdrawalModel from "./Withdrawals.models";
 
 @Entity('time_deposits')
  class TimeDepositModel {
@@ -24,6 +25,9 @@ import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateCol
     nullable: false,
   })
   balance: number;
+
+  @OneToMany(() => WithdrawalModel, (withdrawal) => withdrawal.timeDeposit)
+  withdrawals: WithdrawalModel[];
 }
 
 export default TimeDepositModel;

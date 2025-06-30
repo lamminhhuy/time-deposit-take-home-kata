@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne } from "typeorm";
+import TimeDepositModel from "./TimeDeposits.model";
 
 @Entity('withdrawals')
 class WithdrawalModel {
@@ -21,5 +22,8 @@ class WithdrawalModel {
     nullable: false,
    })
     date: Date;
+
+    @ManyToOne(() => TimeDepositModel, (timeDeposit) => timeDeposit.withdrawals)
+    timeDeposit: TimeDepositModel;
 }
 export default WithdrawalModel;

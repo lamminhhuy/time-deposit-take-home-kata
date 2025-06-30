@@ -1,4 +1,4 @@
-class Withdrawal {
+export class Withdrawal {
     id: number;
     timeDepositId: number;
     amount: number;
