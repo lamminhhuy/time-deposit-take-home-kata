@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from "typeorm";
 
 @Entity('time_deposits')
  class TimeDepositModel {
@@ -18,7 +18,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
   days: number;
 
   @Column({
-    type: 'decimal',
+    type: 'numeric',
     precision: 15,
     scale: 2,
     nullable: false,

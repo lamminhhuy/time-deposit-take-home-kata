@@ -1,11 +1,23 @@
 {
-    "include": [
-      "./src/*"
-    ],
-    "compilerOptions": {
-      "lib": [
-        "esnext"
-      ],
-      "esModuleInterop": true
-    }
-  }
+  "compilerOptions": {
+    "target": "ESNext",
+  "module": "CommonJS",
+
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "strictPropertyInitialization": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true, 
+    "moduleResolution": "node",
+    "outDir": "dist",
+    "importsNotUsedAsValues": "remove",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}

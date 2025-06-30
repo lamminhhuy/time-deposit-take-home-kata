@@ -4,6 +4,9 @@ import { cleanEnv, num, str } from "envalid";
 dotenv.config();
 
 export const env = cleanEnv(process.env, {
+    NODE_ENV: str({
+        default: "dev"
+    }),
     APP_HOST: str({
         default: "localhost"
     }),
@@ -31,8 +34,4 @@ export const env = cleanEnv(process.env, {
     POSTGRES_DB_SSL: str({
         default: "false"
     }),
-    NODE_ENV: str({
-        default: "development"
-    })
-
-});
+})

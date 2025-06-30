@@ -1,40 +1,74 @@
-import { DataSource } from "typeorm";
-import { env } from "../../config/env";
-import WithdrawalModel from "./models/withdrawals.models";
-import TimeDepositModel from "./models/timeDeposits.model";
-export const AppDataSource = new DataSource({
-    type: 'postgres',
-    host: env.POSTGRES_HOST,
-    port: env.POSTGRES_PORT,
-    username: env.POSTGRES_USER,
-    password: env.POSTGRES_PASSWORD,
-    database: env.POSTGRES_DB,
-    entities: [TimeDepositModel, WithdrawalModel],
-    synchronize: false, 
-    logging: env.NODE_ENV === 'dev',
-    migrations: env.NODE_ENV === 'dev' ? ['src/internal/infrastructure/db/postgres/migration/*.ts']: ['dist/internal/infrastructure/db/postgres/migration/*.cjs'],
-    poolSize: env.POSTGRES_MAX_POOL_SIZE || 10,
-    ssl:  false
-});
+import { DataSource } from 'typeorm';
+import { env } from '../../config/env';
+import WithdrawalModel from './models/Withdrawals.models';
+import TimeDepositModel from './models/TimeDeposits.model';
 
-export const initializeDatabase = async () => {
-    try {
-        await AppDataSource.initialize();
-        console.log('Database connected successfully');
-    } catch (error) {
-        console.error('Database connection error:', error);
-        throw error;
+class PostgresDatabase {
+  private static instance: PostgresDatabase;
+  private dataSource: DataSource;
+
+  private constructor() {
+    this.dataSource = new DataSource({
+      type: 'postgres',
+      host: env.POSTGRES_HOST,
+      port: env.POSTGRES_PORT,
+      username: env.POSTGRES_USER,
+      password: env.POSTGRES_PASSWORD,
+      database: env.POSTGRES_DB,
+      entities: [TimeDepositModel, WithdrawalModel],
+      synchronize: env.NODE_ENV === 'dev',
+      logging: env.NODE_ENV === 'dev',
+      migrations: env.NODE_ENV === 'dev' ? ['src/infrastructure/db/postgres/migration/*.ts'] : ['dist/infrastructure/db/postgres/migration/*.cjs'],
+      poolSize: env.POSTGRES_MAX_POOL_SIZE || 10,
+      ssl: false,
+    });
+  }
+
+  public static getInstance(): PostgresDatabase {
+    if (!PostgresDatabase.instance) {
+      PostgresDatabase.instance = new PostgresDatabase();
     }
-};
+    return PostgresDatabase.instance;
+  }
 
-export const closeDatabase = async () => {
+  public async initialize(retries = 3, delay = 1000): Promise<void> {
+    if (this.dataSource.isInitialized) {
+      return;
+    }
+
+    for (let attempt = 1; attempt <= retries; attempt++) {
+      try {
+        await this.dataSource.initialize();
+        console.log('Database connection initialized successfully');
+        return;
+      } catch (error) {
+        console.error(`Attempt ${attempt} to initialize database failed: ${error}`);
+        if (attempt === retries) {
+          throw new Error(`Failed to initialize database after ${retries} attempts: ${error}`);
+        }
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      }
+    }
+  }
+
+  public async close(): Promise<void> {
     try {
-        await AppDataSource.destroy();
+      if (this.dataSource.isInitialized) {
+        await this.dataSource.destroy();
         console.log('Database connection closed');
+      }
     } catch (error) {
-        console.error('Error closing database:', error);
-        throw error;
+      console.error('Error closing database:', error);
+      throw error;
     }
-};
+  }
 
+  public async getDataSource(): Promise<DataSource> {
+    if (!this.dataSource.isInitialized) {
+      await this.initialize();
+    }
+    return this.dataSource;
+  }
+}
 
+export const pgDbInstance = PostgresDatabase.getInstance();
