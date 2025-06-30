@@ -107,9 +107,9 @@ import { TimeDeposit } from "../internal/domain/entities/TimeDeposit.entity";
 
      test("should process multiple deposits with different plan types", () => {
        const deposits: TimeDeposit[] = [
-         { id: 1, days: 60, balance: 1000, planType: PlanType.BASIC },
-         { id: 2, days: 90, balance: 2000, planType: PlanType.PREMIUM },
-         { id: 3, days: 15, balance: 500, planType: PlanType.STUDENT },
+         { id: 1, days: 60, balance: 1000, planType: PlanType.BASIC, withdrawals: [] },
+         { id: 2, days: 90, balance: 2000, planType: PlanType.PREMIUM, withdrawals: [] },
+         { id: 3, days: 15, balance: 500, planType: PlanType.STUDENT, withdrawals: [] },
        ];
        const mockBasicStrategy = {
          calculateInterest: jest.fn().mockReturnValue(50),
