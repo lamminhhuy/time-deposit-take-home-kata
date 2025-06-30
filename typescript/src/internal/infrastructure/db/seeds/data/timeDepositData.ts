@@ -1,4 +1,4 @@
-import { PlanType } from "@/internal/domain/const/planType";
+import { PlanType } from "../../../../domain/const/planType";
 
 export  const timeDepositData = [
   {
