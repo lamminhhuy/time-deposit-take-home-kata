@@ -1,8 +1,8 @@
 import InterestStrategyFactory from "../../domain/factories/InterestStrategyFactory";
 import { container } from "tsyringe";
 import TimeDepositRepository from "../repositories/TimeDepositRepository";
-import GetAllTimeDepositUseCase from "../../application/usecases/GetAllTimeDeposit";
-import UpdateTimeDepositBalancesUseCase from "../../application/usecases/UpdateTimeDepositBalances";
+import GetAllTimeDepositUseCase from "../../application/usecases/GetAllTimeDepositUseCase";
+import UpdateTimeDepositBalancesUseCase from "../../application/usecases/UpdateTimeDepositBalancesUseCase";
 import { pgDbInstance } from "../db/postgres/connection";
 import TimeDepositCalculator from "../../domain/services/TimeDepositCalculator";
 import DefaultBalanceUpdater from "../../domain/services/DefaultBalanceUpdater";

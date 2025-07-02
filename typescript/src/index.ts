@@ -1,14 +1,7 @@
-// import { TimeDeposit } from './TimeDeposit'
-// import { TimeDepositCalculator } from './TimeDepositCalculator'
-
-// const calc = new TimeDepositCalculator()
-// const plans: TimeDeposit[] = [new TimeDeposit('basic', 1234567.0, 45)]
-// const interest = calc.updateBalance(plans)
-// console.log({ interest })
 import express from 'express';
 import { env } from './internal/infrastructure/config/env';
 import { logger } from './internal/infrastructure/logger/logger';
-import {  pgDbInstance } from './internal/infrastructure/db/postgres/connection';
+import { pgDbInstance } from './internal/infrastructure/db/postgres/connection';
 import { runSeed } from './internal/infrastructure/db/seeds/TimeDepositSeed';
 
 const app = express();
@@ -20,7 +13,7 @@ async function bootstrap() {
     logger.info('Database initialized.');
 
     logger.info('Running seed...');
-    await runSeed( await pgDbInstance.getDataSource());
+    await runSeed(await pgDbInstance.getDataSource());
     logger.info('Seed completed.');
 
     logger.info('Setting up container...');
@@ -53,8 +46,9 @@ async function bootstrap() {
 
     process.on('SIGINT', onCloseSignal);
     process.on('SIGTERM', onCloseSignal);
+
   } catch (error) {
-  logger.error('Failed to bootstrap application:');
+    logger.error('Failed to bootstrap application:', error as Error);
     process.exit(1);
   }
 }

@@ -1,7 +1,55 @@
+version: '3.8'
 services:
   postgres:
-    image: postgres
+    image: postgres:15
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_PASSWORD=postgres
+      POSTGRES_USER: huy_kata
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: huy_kata_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U huy_kata -d huy_kata_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5001:5001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: huy_kata
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: huy_kata_db
+      NODE_ENV: development
+      HOST: 0.0.0.0
+    volumes:
+      - .:/app
+      - /app/node_modules
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - app-network
+    command: ["yarn", "start"]
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge

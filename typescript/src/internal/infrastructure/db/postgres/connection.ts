@@ -16,9 +16,9 @@ class PostgresDatabase {
       password: env.POSTGRES_PASSWORD,
       database: env.POSTGRES_DB,
       entities: [TimeDepositModel, WithdrawalModel],
-      synchronize: env.NODE_ENV === 'dev',
-      logging: env.NODE_ENV === 'dev',
-      migrations: env.NODE_ENV === 'dev' ? ['src/infrastructure/db/postgres/migration/*.ts'] : ['dist/infrastructure/db/postgres/migration/*.cjs'],
+      synchronize: true,
+      logging: env.isDev,
+      migrations: env.isDev ? ['src/infrastructure/db/postgres/migration/*.ts'] : ['dist/infrastructure/db/postgres/migration/*.cjs'],
       poolSize: env.POSTGRES_MAX_POOL_SIZE || 10,
       ssl: false,
     });
@@ -43,6 +43,7 @@ class PostgresDatabase {
         return;
       } catch (error) {
         console.error(`Attempt ${attempt} to initialize database failed: ${error}`);
+        console.error(this.dataSource);
         if (attempt === retries) {
           throw new Error(`Failed to initialize database after ${retries} attempts: ${error}`);
         }
