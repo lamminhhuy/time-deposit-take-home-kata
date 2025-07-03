@@ -2,7 +2,7 @@ import { ICalculateInterestStrategy } from "../interfaces/ICalculateInterestStra
 
 class PremiumInterestStrategy implements ICalculateInterestStrategy {
     calculateInterest(days: number,balance: number): number {
-        if (days < 366) {
+        if (days > 45) {
             return (balance * 0.05) / 12;
         }
         return 0;
